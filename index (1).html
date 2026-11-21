@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Turnos de pádel</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@700&display=swap">
+<style>
+:root{--bg:#EEF3F7;--ink:#0E2238;--mute:#5A6E83;--card:#fff;--line:#CFDAE6;--court:#1B5FAA;--oncourt:#fff;--ball:#D4E31F;--onball:#0E2238;--busy:#DDE4EC;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1A2A;--ink:#E8EEF5;--mute:#93A7BC;--card:#12263B;--line:#28405A;--court:#5C9BE0;--oncourt:#0C1A2A;--busy:#1C3149;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0C1A2A;--ink:#E8EEF5;--mute:#93A7BC;--card:#12263B;--line:#28405A;--court:#5C9BE0;--oncourt:#0C1A2A;--busy:#1C3149;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Barlow,system-ui,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:16px}
+header{background:var(--court);color:var(--oncourt);padding:30px 22px 62px;border-radius:0 0 28px 28px;margin:0 -16px 16px;position:relative;overflow:hidden}
+header::before{content:"";position:absolute;inset:12px 12px 38px;border:2px solid rgba(255,255,255,.3);border-radius:8px;background:linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 72% 0/2px 100% no-repeat}
+header::after{content:"";position:absolute;right:26px;bottom:48px;width:34px;height:34px;border-radius:50%;background:var(--ball);box-shadow:0 0 0 6px rgba(255,255,255,.18)}
+h1{font:700 46px/.95 'Barlow Condensed',Impact,sans-serif;margin:0;max-width:66%;position:relative}
+header p{margin:10px 0 0;opacity:.92;max-width:66%;position:relative}
+.tabs{display:flex;gap:6px;margin:-30px 0 14px;position:relative;z-index:2;background:var(--card);padding:5px;border-radius:999px;border:1px solid var(--line)}
+.tabs button{flex:1;padding:12px;border:0;background:transparent;color:var(--ink);border-radius:999px;font:600 15px Barlow,sans-serif;cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--ball);outline-offset:2px}
+h2{font:700 22px 'Barlow Condensed',Impact,sans-serif;margin:18px 0 8px}
+.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.days button{flex:0 0 auto;min-width:66px;padding:8px 10px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;font:600 14px Barlow,sans-serif;cursor:pointer;text-align:center}
+.days button[aria-pressed=true]{border-color:var(--court);box-shadow:inset 0 0 0 2px var(--court)}
+.gridbox{overflow-x:auto}
+.grid{display:grid;gap:6px;min-width:300px}
+.grid .h{font-weight:600;font-size:14px;color:var(--mute);text-align:center;padding:2px}
+.grid .hr{font:700 18px 'Barlow Condensed',sans-serif;align-self:center}
+.slot{padding:13px 4px;border-radius:14px;border:1.5px solid var(--court);background:var(--card);color:var(--ink);font:600 14px Barlow,sans-serif;cursor:pointer}
+.slot.busy{background:repeating-linear-gradient(135deg,var(--busy) 0 6px,transparent 6px 12px);border-color:var(--line);color:var(--mute);cursor:not-allowed}
+.slot.pending{background:var(--ball);color:var(--onball);border-color:var(--ball)}
+.slot.sel{background:var(--court);color:var(--oncourt)}
+.slot.res{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.slot.blk{background:var(--busy);color:var(--mute);border-color:var(--line)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;margin-top:16px}
+label{display:block;font-weight:600;font-size:14px;margin:10px 0 4px}
+input{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:400 16px Barlow,sans-serif}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cta{display:block;text-align:center;text-decoration:none;background:var(--ball);color:var(--onball);font:700 22px 'Barlow Condensed',sans-serif;padding:15px;border-radius:999px;margin-top:16px;box-shadow:0 10px 24px -10px var(--ball)}
+.cta[aria-disabled=true]{opacity:.45;pointer-events:none}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:13px;color:var(--mute);margin-top:10px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px;border:1.5px solid var(--court)}
+.note{font-size:14px;color:var(--mute)}
+.sws{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap}.sw{width:38px;height:38px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 2px var(--line);cursor:pointer}.sw[aria-pressed=true]{box-shadow:0 0 0 3px var(--ink)}
+@media (prefers-reduced-motion:no-preference){.cta{transition:transform .15s}.cta:active{transform:scale(.98)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1 id="club"></h1><p>Elegí día, cancha y horario. Reservás por WhatsApp.</p></header>
+<div class="tabs">
+<button id="tCli" aria-pressed="true">Reservar turno</button>
+<button id="tOwn" aria-pressed="false">Panel del dueño</button>
+</div>
+<main id="app"></main>
+</div>
+<script>
+var KEY='turnos-demo-v1';
+var DEF={club:'Club Pádel Demo',phone:'5493434000000',sena:5000,alias:'club.padel.mp',from:16,to:24,courts:3,accent:'#0E7C86',slots:{}};
+function load(){try{var r=localStorage.getItem(KEY);if(r)return Object.assign({},DEF,JSON.parse(r));}catch(e){}return JSON.parse(JSON.stringify(DEF));}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+var ACC=[['Verde azulado','#0E7C86'],['Azul','#1B5FAA'],['Verde','#0F7B3F'],['Violeta','#6B3FD1'],['Rojo','#C23A2E'],['Negro','#1B1F27']];
+var S=load(),mode='cli',dayIdx=0,sel=null,name='';
+function applyAccent(){var r=document.documentElement.style;r.setProperty('--court',S.accent);r.setProperty('--oncourt','#fff');}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function days(){var a=[],d=new Date();for(var i=0;i<7;i++){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+i);
+var iso=x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');
+a.push({iso:iso,top:i===0?'Hoy':x.toLocaleDateString('es-AR',{weekday:'short'}),sub:x.getDate()+'/'+(x.getMonth()+1),
+long:x.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'numeric'})});}return a;}
+function key(i,c,h){return days()[i].iso+'|'+c+'|'+h;}
+function hh(h){return String(h).padStart(2,'0')+':00';}
+function grid(){
+var D=days(),out='<div class="days">';
+D.forEach(function(d,i){out+='<button data-day="'+i+'" aria-pressed="'+(i===dayIdx)+'">'+d.top+'<br>'+d.sub+'</button>';});
+out+='</div><h2>Canchas y horarios</h2><div class="gridbox"><div class="grid" style="grid-template-columns:52px repeat('+S.courts+',1fr)"><div></div>';
+for(var c=1;c<=S.courts;c++)out+='<div class="h">Cancha '+c+'</div>';
+for(var h=S.from;h<S.to;h++){out+='<div class="hr">'+hh(h)+'</div>';
+for(c=1;c<=S.courts;c++){var st=S.slots[key(dayIdx,c,h)]||'free',isSel=sel&&sel.d===dayIdx&&sel.c===c&&sel.h===h,cls='slot',txt='Libre',dis='';
+if(mode==='cli'){if(st==='free'){if(isSel){cls+=' sel';txt='Elegido';}}else{cls+=' busy';txt='Ocupado';dis=' disabled';}}
+else{if(st==='pending'){cls+=' pending';txt='Pendiente';}else if(st==='res'){cls+=' res';txt='Reservado';}else if(st==='blk'){cls+=' blk';txt='Bloqueado';}}
+out+='<button class="'+cls+'"'+dis+' data-c="'+c+'" data-h="'+h+'">'+txt+'</button>';}}
+out+='</div></div>';return out;}
+function render(){applyAccent();
+document.getElementById('club').textContent=S.club;
+document.getElementById('tCli').setAttribute('aria-pressed',mode==='cli');
+document.getElementById('tOwn').setAttribute('aria-pressed',mode==='own');
+var o='';
+if(mode==='cli'){
+o+=grid();
+o+='<div class="legend"><span><i></i>Libre</span><span><i style="background:var(--busy);border-color:var(--line)"></i>Ocupado</span></div>';
+var D=days(),ok=!!sel&&!!name.trim();
+var href='#';
+if(sel){var msg='Hola, quiero reservar la Cancha '+sel.c+' el '+D[sel.d].long+' a las '+hh(sel.h)+'. Mi nombre es '+name.trim()+'.';
+href='https://wa.me/'+S.phone+'?text='+encodeURIComponent(msg);}
+o+='<div class="card"><h2 style="margin-top:0">Tu reserva</h2>';
+o+=sel?'<p>Cancha '+sel.c+', '+esc(D[sel.d].long)+', '+hh(sel.h)+'.</p>':'<p class="note">Tocá un horario libre para elegirlo.</p>';
+o+='<label for="nm">Tu nombre</label><input id="nm" value="'+esc(name)+'" placeholder="Ej: Martín">';
+o+='<p class="note">Para confirmar el turno se pide una seña de $'+S.sena.toLocaleString('es-AR')+'. Alias: <b>'+esc(S.alias)+'</b></p>';
+o+='<a id="wa" class="cta" target="_blank" rel="noopener" href="'+href+'" aria-disabled="'+(!ok)+'">Reservar por WhatsApp</a></div>';
+}else{
+o+='<p class="note">Tocá un horario para cambiar su estado: libre, reservado o bloqueado. Los turnos pedidos por WhatsApp aparecen como pendientes hasta que los confirmes.</p>';
+o+=grid();
+o+='<div class="legend"><span><i></i>Libre</span><span><i style="background:var(--ball);border-color:var(--ball)"></i>Pendiente</span><span><i style="background:var(--ink)"></i>Reservado</span><span><i style="background:var(--busy);border-color:var(--line)"></i>Bloqueado</span></div>';
+o+='<div class="card"><h2 style="margin-top:0">Datos del club</h2>';
+o+='<label for="f1">Nombre del club</label><input id="f1" data-f="club" value="'+esc(S.club)+'">';
+o+='<label for="f2">WhatsApp (con código de país, sin + ni espacios)</label><input id="f2" data-f="phone" value="'+esc(S.phone)+'" inputmode="numeric">';
+o+='<div class="row"><div><label for="f3">Monto de la seña ($)</label><input id="f3" data-f="sena" type="number" value="'+S.sena+'"></div>';
+o+='<div><label for="f4">Alias para la seña</label><input id="f4" data-f="alias" value="'+esc(S.alias)+'"></div></div>';
+o+='<div class="row"><div><label for="f5">Abre (hora)</label><input id="f5" data-f="from" type="number" min="6" max="22" value="'+S.from+'"></div>';
+o+='<div><label for="f6">Cierra (hora)</label><input id="f6" data-f="to" type="number" min="8" max="24" value="'+S.to+'"></div></div>';
+o+='<label for="f7">Cantidad de canchas</label><input id="f7" data-f="courts" type="number" min="1" max="6" value="'+S.courts+'">';
+o+='<p style="font-weight:600;font-size:14px;margin:16px 0 0">Color de tu marca</p><div class="sws">'+ACC.map(function(a){return '<button class="sw" data-accent="'+a[1]+'" aria-label="'+a[0]+'" aria-pressed="'+(S.accent===a[1])+'" style="background:'+a[1]+'"></button>';}).join('')+'</div></div>';
+}
+document.getElementById('app').innerHTML=o;}
+document.getElementById('tCli').onclick=function(){mode='cli';render();};
+document.getElementById('tOwn').onclick=function(){mode='own';sel=null;render();};
+var app=document.getElementById('app');
+app.addEventListener('click',function(e){
+var b=e.target.closest('button'),a=e.target.closest('#wa');
+if(a){if(a.getAttribute('aria-disabled')==='true'){e.preventDefault();return;}
+S.slots[key(sel.d,sel.c,sel.h)]='pending';save();var k=sel;sel=null;setTimeout(render,300);return;}
+if(!b)return;
+if(b.dataset.accent){S.accent=b.dataset.accent;save();render();return;}
+if(b.dataset.day!==undefined){dayIdx=+b.dataset.day;render();return;}
+if(b.dataset.h!==undefined){var c=+b.dataset.c,h=+b.dataset.h,k2=key(dayIdx,c,h);
+if(mode==='cli'){sel={d:dayIdx,c:c,h:h};}
+else{var st=S.slots[k2]||'free',nx={free:'res',pending:'res',res:'blk',blk:'free'}[st];
+if(nx==='free')delete S.slots[k2];else S.slots[k2]=nx;save();}
+render();}});
+app.addEventListener('input',function(e){
+var t=e.target;
+if(t.id==='nm'){name=t.value;var w=document.getElementById('wa');if(w){var ok=!!sel&&!!name.trim();w.setAttribute('aria-disabled',!ok);
+if(sel){var D=days();w.href='https://wa.me/'+S.phone+'?text='+encodeURIComponent('Hola, quiero reservar la Cancha '+sel.c+' el '+D[sel.d].long+' a las '+hh(sel.h)+'. Mi nombre es '+name.trim()+'.');}}return;}
+var f=t.dataset.f;if(!f)return;
+S[f]=(f==='club'||f==='phone'||f==='alias')?t.value:(parseInt(t.value,10)||0);
+if(S.to<=S.from){S.to=Math.min(24,S.from+1);}
+if(S.courts<1)S.courts=1;
+save();document.getElementById('club').textContent=S.club;});
+app.addEventListener('change',function(e){if(e.target.dataset.f)render();});
+render();
+</script>
+</body>
+</html>
